@@ -138,25 +138,36 @@ def extract_next_links(rawDatas):
 
             if item[0] in subdomains[itemSubdomain]:
                 # path has been crawled, increment count
-                subdomains[itemSubdomain][item[0]] += 1
+                subdomains[itemSubdomain][itemPath] += 1
 
             #else:
 #                subdomains[itemSubdomain][item[0]] = 1
                 
         else:
             # subdomain does not exist, create default
-            subdomains[itemSubdomain] = {item[0]: 1}
+            subdomains[itemSubdomain] = {itemPath: 1}
             
     return outputLinks
 #given a url. return the query in dictonary
 def query_dict(url):
       url_parse=urlparse(url)
       return urlparse.parse_qs(url[4])
-
+#given a path. Check if it has been visted before
 def check_trap(url, x=5):
     #if the url has been visted x amount of times remove it
     parsed=urlparse(url)
-    #
+    dict_o
+    possible_trap=0
+    exceptions={'ID':0}
+    querys=query_dict(url)
+    #check if file end in php
+    if '.php' in url:
+        possible_trap=1
+    #if there are query values Then its possibly a trap
+    if len(querys)!=0
+        possible_trap=1
+    if possible_trap:
+        return false
     return ''
 def strip_anchor(url):
     return url.split('#')[0]
