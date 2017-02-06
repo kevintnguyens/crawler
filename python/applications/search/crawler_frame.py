@@ -75,7 +75,7 @@ class CrawlerFrame(IApplication):
     def writeAnalyticsToFile(self):
         with open('analytics.txt', 'a') as anaFile:
             anaFile.write('Invalid Links: '+str(self.invalidLinks))
-            anaFile.write('\nAverage Download Time: --')
+            anaFile.write('\nAverage Download Time: ')
             anaFile.write('\nPage With Most Outbound Links: '+mostOutboundLinks[0]+' with '+str(mostOutboundLinks[1])+' links')
 
 
@@ -138,14 +138,14 @@ def extract_next_links(rawDatas):
 
             if item[0] in subdomains[itemSubdomain]:
                 # path has been crawled, increment count
-                subdomains[itemSubdomain][item[0]] += 1
+                subdomains[itemSubdomain][itemPath] += 1
 
             #else:
 #                subdomains[itemSubdomain][item[0]] = 1
                 
         else:
             # subdomain does not exist, create default
-            subdomains[itemSubdomain] = {item[0]: 1}
+            subdomains[itemSubdomain] = {itemPath: 1}
             
     return outputLinks
 #given a url. return the query in dictonary
