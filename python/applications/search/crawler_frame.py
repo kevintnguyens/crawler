@@ -19,7 +19,7 @@ LOG_HEADER = "[CRAWLER]"
 url_count = 0 if not os.path.exists("successful_urls.txt") else (len(open("successful_urls.txt").readlines()) - 1)
 if url_count < 0:
     url_count = 0
-MAX_LINKS_TO_DOWNLOAD = 20
+MAX_LINKS_TO_DOWNLOAD = 100
 
 @Producer(ProducedLink)
 @GetterSetter(OneUnProcessedGroup)
@@ -103,8 +103,11 @@ def is_valid(url):
 
     This is a great place to filter out crawler traps.
     '''
-    
+    #function 1 be able to read query into a tupple list
+    #given a url break the query. try using beautiful soup. Put this in a hashmap
+    #function 2 is check the anchor tag. and strip it
     #return False means url is not used awesome.
+    #function 3
     parsed = urlparse(url)
     if parsed.scheme not in set(["http", "https"]):
         return False
