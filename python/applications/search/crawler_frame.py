@@ -31,7 +31,7 @@ class CrawlerFrame(IApplication):
     def __init__(self, frame):
         self.starttime = time()
         # Set app_id <student_id1>_<student_id2>...
-        self.app_id = "13942307_78016851"
+        self.app_id = "139421307_78016851_1"
         # Set user agent string to IR W17 UnderGrad <student_id1>, <student_id2> ...
         # If Graduate studetn, change the UnderGrad part to Grad.
         #Function 
@@ -153,13 +153,15 @@ def extract_next_links(rawDatas):
     return outputLinks
 #given a url. return the query in dictonary
 def query_dict(url):
+    try:
       url_parse=urlparse(url)
-      return urlparse.parse_qs(url[4])
+      return urlparse.parse_qs(url_parse.query)
+    except:
+        return ''
 #given a path. Check if it has been visted before
 def check_trap(url, x=5):
     #if the url has been visted x amount of times remove it
     parsed=urlparse(url)
-    dict_o
     possible_trap=0
     exceptions={'ID':0}
     querys=query_dict(url)
@@ -167,11 +169,21 @@ def check_trap(url, x=5):
     if '.php' in url:
         possible_trap=1
     #if there are query values Then its possibly a trap
-    if len(querys)!=0
+    if len(querys)!=0:
         possible_trap=1
     if possible_trap:
-        return false
-    return ''
+#        return 1
+      if parsed.hostname in subdomains:
+             for exception in exceptions:
+                 if exception in querys:
+                     return 0
+             if parsed.path in subdomains[parsed.hostname]:
+                 if subdomains[parsed.hostname][parsed.path] >= x:
+                     with open('trapss.txt', 'a') as anaFile:
+                         anaFile.write('traps:'+str(parsed.hostname)+str(parsed.path)+'\n')
+
+                     return 1
+    return 0
 def strip_anchor(url):
     return url.split('#')[0]
 def is_valid(url):
@@ -191,6 +203,8 @@ def is_valid(url):
     #given a hashmap of a list of urls and query parament. check if it has been hit more then x amount of times. Make exceptions for page query.
     url=strip_anchor(url)
     parsed = urlparse(url)
+    if check_trap(url):
+        return False
     #query_dict(url)
     if parsed.scheme not in set(["http", "https"]):
         return False
