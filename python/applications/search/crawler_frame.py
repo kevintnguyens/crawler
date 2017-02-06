@@ -6,6 +6,7 @@ from lxml import html,etree
 import re, os
 from time import time
 from bs4 import BeautifulSoup
+from urlparse import urlparse
 try:
     # For python 2
     from urlparse import urlparse, parse_qs
@@ -96,6 +97,10 @@ def extract_next_links(rawDatas):
         for tag in soup.findAll('a',href=True):
             outputLinks.append(tag['href'])
     return outputLinks
+#given a url. return the query in dictonary
+def query_dict(url):
+      url_parse=urlparse(url)
+      return urlparse.parse_qs(url[4])
 
 def is_valid(url):
     '''
@@ -107,7 +112,7 @@ def is_valid(url):
     # QUINN WAS HERE
     #function 1 be able to read query into a tupple list
     #given a url break the query. try using beautiful soup. Put this in a hashmap
-    #function 2 is check the anchor tag. and strip it
+    #function 2 is check the anchor tag. and strip it from url.
     #return False means url is not used awesome.
     #function 3 get time over count and write it to result.txt as Averge Time: X
     #function 4. is store information in to a dictionary such that it can be transferd to a json file.
