@@ -75,13 +75,12 @@ class CrawlerFrame(IApplication):
     def writeAnalyticsToFile(self):
         with open('analytics.txt', 'a') as anaFile:
             anaFile.write('Invalid Links: '+str(self.invalidLinks))
-<<<<<<< HEAD
-            anaFile.write('\nAverage Download Time: ')
-=======
             anaFile.write('\nAverage Download Time: '+str(url_count/self.starttime)+"hello")
->>>>>>> fdcedc78621137dfc589630e36d3778a1519473b
             anaFile.write('\nPage With Most Outbound Links: '+mostOutboundLinks[0]+' with '+str(mostOutboundLinks[1])+' links')
-
+            anaFile.write('Subdomain Counts: \n')
+            for sub in subdomains:
+                
+                anaFile.write(str(sub)+': ')
 
     def shutdown(self):
         print "downloaded ", url_count, " in ", time() - self.starttime, " seconds."
@@ -140,12 +139,12 @@ def extract_next_links(rawDatas):
         if itemSubdomain in subdomains:
             # subdomain exists
 
-            if item[0] in subdomains[itemSubdomain]:
+            if itemPath in subdomains[itemSubdomain]:
                 # path has been crawled, increment count
                 subdomains[itemSubdomain][itemPath] += 1
 
-            #else:
-#                subdomains[itemSubdomain][item[0]] = 1
+            else:
+                subdomains[itemSubdomain][itemPath] = 1
                 
         else:
             # subdomain does not exist, create default
