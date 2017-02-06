@@ -31,6 +31,7 @@ class CrawlerFrame(IApplication):
         self.app_id = "13942307"
         # Set user agent string to IR W17 UnderGrad <student_id1>, <student_id2> ...
         # If Graduate studetn, change the UnderGrad part to Grad.
+        #Function 
         self.UserAgentString = '13942307'
 		
         self.frame = frame
@@ -107,7 +108,10 @@ def is_valid(url):
     #given a url break the query. try using beautiful soup. Put this in a hashmap
     #function 2 is check the anchor tag. and strip it
     #return False means url is not used awesome.
-    #function 3
+    #function 3 get time over count and write it to result.txt as Averge Time: X
+    #function 4. is store information in to a dictionary such that it can be transferd to a json file.
+    #function 5
+    #given a hashmap of a list of urls and query parament. check if it has been hit more then x amount of times. Make exceptions for page query.
     parsed = urlparse(url)
     if parsed.scheme not in set(["http", "https"]):
         return False
