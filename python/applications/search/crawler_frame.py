@@ -38,6 +38,11 @@ class CrawlerFrame(IApplication):
 
 	# Q
 	# Analytics global variables
+	try:
+            os.remove("analytics.txt")
+        except OSError:
+            pass
+
         self.subdomainCount = dict()
         self.invalidLinks = 0
         
