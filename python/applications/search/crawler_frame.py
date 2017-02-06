@@ -21,7 +21,6 @@ url_count = 0 if not os.path.exists("successful_urls.txt") else (len(open("succe
 if url_count < 0:
     url_count = 0
 MAX_LINKS_TO_DOWNLOAD = 100
-mostOutboundLinks = ("url", 0)
 
 @Producer(ProducedLink)
 @GetterSetter(OneUnProcessedGroup)
@@ -35,14 +34,7 @@ class CrawlerFrame(IApplication):
         # If Graduate studetn, change the UnderGrad part to Grad.
         #Function 
         self.UserAgentString = 'IR W17 UnderGrad 13942307, 78016851'
-
-
-	# Q
-	# Analytics global variables
-        self.subdomainCount = dict()
-        self.invalidLinks = 0
-        
-	
+		
         self.frame = frame
         assert(self.UserAgentString != None)
         assert(self.app_id != "")
@@ -63,22 +55,11 @@ class CrawlerFrame(IApplication):
                 if is_valid(l) and robot_manager.Allowed(l, self.UserAgentString):
                     lObj = ProducedLink(l, self.UserAgentString)
                     self.frame.add(lObj)
-                else:
-                    self.invalidLinks += 1
         if url_count >= MAX_LINKS_TO_DOWNLOAD:
             self.done = True
 
-    # Writes analytics to a file at the end of the crawl
-    def writeAnalyticsToFile(self):
-        with open('analytics.txt', 'a') as anaFile:
-            anaFile.write('Invalid Links: '+str(self.invalidLinks))
-            anaFile.write('\nAverage Download Time: --')
-            anaFile.write('\nPage With Most Outbound Links: '+mostOutboundLinks[0]+' with '+str(mostOutboundLinks[1])+' links')
-
     def shutdown(self):
         print "downloaded ", url_count, " in ", time() - self.starttime, " seconds."
-        # calling new analytics functions
-        self.writeAnalyticsToFile()
         pass
 
 def save_count(urls):
@@ -98,7 +79,6 @@ STUB FUNCTIONS TO BE FILLED OUT BY THE STUDENT.
 '''
 def extract_next_links(rawDatas):
     outputLinks = list()
-    global mostOutboundLinks
     '''
     rawDatas is a list of tuples -> [(url1, raw_content1), (url2, raw_content2), ....]
     the return of this function should be a list of urls in their absolute form
@@ -108,21 +88,14 @@ def extract_next_links(rawDatas):
 
     Suggested library: lxml
     '''
-
+    
     #print rawDatas
     #O ( n * k ) k is size of string size
     
     for item in rawDatas:
-        tagCount = 0
         soup = BeautifulSoup(item[1], 'lxml')
         for tag in soup.findAll('a',href=True):
             outputLinks.append(tag['href'])
-            tagCount += 1
-
-        # Update for Part 3 in analytics
-        if tagCount > mostOutboundLinks[1]:
-            mostOutboundLinks = (item[0], tagCount)
-            
     return outputLinks
 #given a url. return the query in dictonary
 def query_dict(url):
@@ -136,8 +109,7 @@ def is_valid(url):
 
     This is a great place to filter out crawler traps.
     '''
-    # QUINN WAS HERE
-    #function 1 be able to read query into a tupple list
+ 
     #given a url break the query. try using beautiful soup. Put this in a hashmap
     #function 2 is check the anchor tag. and strip it from url.
     #return False means url is not used awesome.
@@ -146,6 +118,7 @@ def is_valid(url):
     #function 5
     #given a hashmap of a list of urls and query parament. check if it has been hit more then x amount of times. Make exceptions for page query.
     parsed = urlparse(url)
+    #query_dict(url)
     if parsed.scheme not in set(["http", "https"]):
         return False
     try:
