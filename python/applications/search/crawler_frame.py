@@ -22,6 +22,7 @@ if url_count < 0:
     url_count = 0
 MAX_LINKS_TO_DOWNLOAD = 100
 mostOutboundLinks = ("url", 0)
+subdomains = dict()
 
 @Producer(ProducedLink)
 @GetterSetter(OneUnProcessedGroup)
@@ -42,8 +43,7 @@ class CrawlerFrame(IApplication):
             os.remove("analytics.txt")
         except OSError:
             pass
-
-        self.subdomainCount = dict()
+        
         self.invalidLinks = 0
         
         self.frame = frame
@@ -83,6 +83,7 @@ class CrawlerFrame(IApplication):
         print "downloaded ", url_count, " in ", time() - self.starttime, " seconds."
         # calling new analytics functions
         self.writeAnalyticsToFile()
+        print subdomains
         pass
 
 def save_count(urls):
@@ -103,6 +104,7 @@ STUB FUNCTIONS TO BE FILLED OUT BY THE STUDENT.
 def extract_next_links(rawDatas):
     outputLinks = list()
     global mostOutboundLinks
+    global subdomains
     '''
     rawDatas is a list of tuples -> [(url1, raw_content1), (url2, raw_content2), ....]
     the return of this function should be a list of urls in their absolute form
@@ -126,6 +128,24 @@ def extract_next_links(rawDatas):
         # Update for Part 3 in analytics
         if tagCount > mostOutboundLinks[1]:
             mostOutboundLinks = (item[0], tagCount)
+
+        # Track subdomains for analytics
+        itemSubdomain = (urlparse(item[0])).hostname
+        itemPath = (urlparse(item[0])).path
+
+        if itemSubdomain in subdomains:
+            # subdomain exists
+
+            if item[0] in subdomains[itemSubdomain]:
+                # path has been crawled, increment count
+                subdomains[itemSubdomain][item[0]] += 1
+
+            #else:
+#                subdomains[itemSubdomain][item[0]] = 1
+                
+        else:
+            # subdomain does not exist, create default
+            subdomains[itemSubdomain] = {item[0]: 1}
             
     return outputLinks
 #given a url. return the query in dictonary
