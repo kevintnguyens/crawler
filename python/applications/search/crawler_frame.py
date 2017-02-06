@@ -28,11 +28,11 @@ class CrawlerFrame(IApplication):
     def __init__(self, frame):
         self.starttime = time()
         # Set app_id <student_id1>_<student_id2>...
-        self.app_id = "13942307"
+        self.app_id = "13942307_78016851"
         # Set user agent string to IR W17 UnderGrad <student_id1>, <student_id2> ...
         # If Graduate studetn, change the UnderGrad part to Grad.
         #Function 
-        self.UserAgentString = '13942307'
+        self.UserAgentString = 'IR W17 UnderGrad 13942307, 78016851'
 		
         self.frame = frame
         assert(self.UserAgentString != None)
@@ -104,6 +104,7 @@ def is_valid(url):
 
     This is a great place to filter out crawler traps.
     '''
+    # QUINN WAS HERE
     #function 1 be able to read query into a tupple list
     #given a url break the query. try using beautiful soup. Put this in a hashmap
     #function 2 is check the anchor tag. and strip it
