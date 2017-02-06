@@ -75,7 +75,11 @@ class CrawlerFrame(IApplication):
     def writeAnalyticsToFile(self):
         with open('analytics.txt', 'a') as anaFile:
             anaFile.write('Invalid Links: '+str(self.invalidLinks))
+<<<<<<< HEAD
             anaFile.write('\nAverage Download Time: ')
+=======
+            anaFile.write('\nAverage Download Time: '+str(url_count/self.starttime)+"hello")
+>>>>>>> fdcedc78621137dfc589630e36d3778a1519473b
             anaFile.write('\nPage With Most Outbound Links: '+mostOutboundLinks[0]+' with '+str(mostOutboundLinks[1])+' links')
 
 
@@ -153,6 +157,13 @@ def query_dict(url):
       url_parse=urlparse(url)
       return urlparse.parse_qs(url[4])
 
+def check_trap(url, x=5):
+    #if the url has been visted x amount of times remove it
+    parsed=urlparse(url)
+    #
+    return ''
+def strip_anchor(url):
+    return url.split('#')[0]
 def is_valid(url):
     '''
     Function returns True or False based on whether the url has to be downloaded or not.
@@ -168,6 +179,7 @@ def is_valid(url):
     #function 4. is store information in to a dictionary such that it can be transferd to a json file.
     #function 5
     #given a hashmap of a list of urls and query parament. check if it has been hit more then x amount of times. Make exceptions for page query.
+    url=strip_anchor(url)
     parsed = urlparse(url)
     #query_dict(url)
     if parsed.scheme not in set(["http", "https"]):
