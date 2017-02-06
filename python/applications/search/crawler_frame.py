@@ -75,12 +75,16 @@ class CrawlerFrame(IApplication):
     def writeAnalyticsToFile(self):
         with open('analytics.txt', 'a') as anaFile:
             anaFile.write('Invalid Links: '+str(self.invalidLinks))
-            anaFile.write('\nAverage Download Time: '+str(url_count/self.starttime)+"hello")
+            anaFile.write('\nAverage Download Time: '+str(round((time()-self.starttime), 2)/url_count)+' Seconds')
             anaFile.write('\nPage With Most Outbound Links: '+mostOutboundLinks[0]+' with '+str(mostOutboundLinks[1])+' links')
-            anaFile.write('Subdomain Counts: \n')
+            anaFile.write('\n\nSubdomain Counts:')
+
+            # Print out count of subdomains
             for sub in subdomains:
-                
-                anaFile.write(str(sub)+': ')
+                subcount = 0
+                for path in subdomains[sub]:
+                    subcount += subdomains[sub][path]
+                anaFile.write('\n'+str(sub)+': '+str(subcount))
 
     def shutdown(self):
         print "downloaded ", url_count, " in ", time() - self.starttime, " seconds."
@@ -156,6 +160,7 @@ def query_dict(url):
       url_parse=urlparse(url)
       return urlparse.parse_qs(url[4])
 #given a path. Check if it has been visted before
+'''
 def check_trap(url, x=5):
     #if the url has been visted x amount of times remove it
     parsed=urlparse(url)
@@ -171,7 +176,7 @@ def check_trap(url, x=5):
         possible_trap=1
     if possible_trap:
         return false
-    return ''
+    return '''''
 def strip_anchor(url):
     return url.split('#')[0]
 def is_valid(url):
