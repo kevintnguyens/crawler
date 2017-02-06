@@ -163,7 +163,7 @@ def query_dict(url):
     except:
         return ''
 #given a path. Check if it has been visted before
-'''
+
 def check_trap(url, x=5):
     #if the url has been visted x amount of times remove it
     parsed=urlparse(url)
@@ -177,7 +177,6 @@ def check_trap(url, x=5):
     if len(querys)!=0:
         possible_trap=1
     if possible_trap:
-<<<<<<< HEAD
 #        return 1
       if parsed.hostname in subdomains:
              for exception in exceptions:
@@ -190,10 +189,8 @@ def check_trap(url, x=5):
 
                      return 1
     return 0
-=======
-        return false
-    return '''''
->>>>>>> 605be478fef4782cbe73f33337fcd1d6dc1c1927
+
+
 def strip_anchor(url):
     return url.split('#')[0]
 def is_valid(url):
