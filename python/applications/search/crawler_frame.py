@@ -75,7 +75,11 @@ class CrawlerFrame(IApplication):
     def writeAnalyticsToFile(self):
         with open('analytics.txt', 'a') as anaFile:
             anaFile.write('Invalid Links: '+str(self.invalidLinks))
+<<<<<<< HEAD
+            anaFile.write('\nAverage Download Time: ')
+=======
             anaFile.write('\nAverage Download Time: '+str(url_count/self.starttime)+"hello")
+>>>>>>> fdcedc78621137dfc589630e36d3778a1519473b
             anaFile.write('\nPage With Most Outbound Links: '+mostOutboundLinks[0]+' with '+str(mostOutboundLinks[1])+' links')
 
 
