@@ -55,7 +55,7 @@ class CrawlerFrame(IApplication):
 
     def initialize(self):
         self.count = 0
-        l = ProducedLink("http://www.ics.uci.edu", self.UserAgentString)
+        l = ProducedLink("http://www.ics.uci.edu/community/news/view_news.php", self.UserAgentString)
         print l.full_url
         self.frame.add(l)
 
@@ -163,7 +163,7 @@ def query_dict(url):
         #found on stackover flow because parse_qs does not work
         return dict(query.split('=') for query in url_parse.query.split("&"))
     except Exception as e:
-        #print str(e)
+        print str(e)
         return ''
 #given a path. Check if it has been visted before
 
@@ -183,6 +183,10 @@ def check_trap(url, x=5):
     if possible_trap:
 #        return 1
       if parsed.hostname in subdomains:
+             print(querys)
+             if '/community/news/view_news.php' in url:
+                print(querys)                 
+                 
              for exception in exceptions:
                  
                  if exception in querys:
