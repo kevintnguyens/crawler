@@ -6,7 +6,8 @@ from lxml import html,etree
 import re, os
 from time import time
 from bs4 import BeautifulSoup
-from urlparse import urlparse
+import urlparse
+
 try:
     # For python 2
     from urlparse import urlparse, parse_qs
@@ -158,9 +159,11 @@ def extract_next_links(rawDatas):
 #given a url. return the query in dictonary
 def query_dict(url):
     try:
-      url_parse=urlparse(url)
-      return urlparse.parse_qs(url_parse.query)
-    except:
+        url_parse=urlparse(url)
+        #found on stackover flow because parse_qs does not work
+        return dict(query.split('=') for query in url_parse.query.split("&"))
+    except Exception as e:
+        #print str(e)
         return ''
 #given a path. Check if it has been visted before
 
@@ -168,8 +171,9 @@ def check_trap(url, x=5):
     #if the url has been visted x amount of times remove it
     parsed=urlparse(url)
     possible_trap=0
-    exceptions={'ID':0}
+    exceptions=['id','ID','page','PAGE']
     querys=query_dict(url)
+
     #check if file end in php
     if '.php' in url:
         possible_trap=1
@@ -180,11 +184,12 @@ def check_trap(url, x=5):
 #        return 1
       if parsed.hostname in subdomains:
              for exception in exceptions:
+                 
                  if exception in querys:
                      return 0
              if parsed.path in subdomains[parsed.hostname]:
                  if subdomains[parsed.hostname][parsed.path] >= x:
-                     with open('trapss.txt', 'a') as anaFile:
+                     with open('traps.txt', 'a') as anaFile:
                          anaFile.write('traps:'+str(parsed.hostname)+str(parsed.path)+'\n')
 
                      return 1
