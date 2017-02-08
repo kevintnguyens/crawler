@@ -68,7 +68,7 @@ class CrawlerFrame(IApplication):
                     lObj = ProducedLink(l, self.UserAgentString)
                     self.frame.add(lObj)
                 else:
-                    print l + 'was invalid\n'
+                    #print l + 'was invalid\n'
                     self.invalidLinks += 1
         if url_count >= MAX_LINKS_TO_DOWNLOAD:
             self.done = True
@@ -133,23 +133,25 @@ def extract_next_links(rawDatas):
         for tag in soup.findAll('a',href=True):
             url=strip_anchor(tag['href'])
             parsed = urlparse(tag['href'])
+            org_parsed = urlparse(item[0])
             #if url does begin with http or https. It its an absolute url
             if parsed.scheme in set(["http", "https"]):
                 outputLinks.append(tag['href'])
-                tagCount += 1
-            #rel link with /. replace path with new path
+                
+            #rel link that begins with  only / replace path with new path
             elif len(tag['href'])>1 and tag['href'][0]=='/' and tag['href'][1]!='/' :
-                parsed = urlparse(item[0])
-                url=parsed.scheme+parsed.netloc
-                outputLinks.append(url+'/'+tag['href'])
-                tagCount += 1
-            #path is // replace hostname with this
+                
+                outputLinks.append(org_parsed.scheme+org_parsed.netloc+tag['href'])
+                
+            #path is // replace hostname with this keep the scheme
             elif len(tag['href'])>1 and tag['href'][0]=='/' and tag['href'][1]=='/':
-                outputLinks.append('http'+tag['href'])
-                tagCount+=1
-            else
+                outputLinks.append(org_parsed.scheme+tag['href'])
+        
+            else:
                 #append # , ? and everything else to current url
                 outputLinks.append(item[0]+'/'+tag['href'])
+            
+            tagCount += 1
         # Update for Part 3 in analytics
         if tagCount > mostOutboundLinks[1]:
             mostOutboundLinks = (item[0], tagCount)
