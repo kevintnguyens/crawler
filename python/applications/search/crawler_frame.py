@@ -7,7 +7,7 @@ import re, os
 from time import time
 from bs4 import BeautifulSoup
 import urlparse
-
+import cgi
 try:
     # For python 2
     from urlparse import urlparse, parse_qs
@@ -21,7 +21,7 @@ LOG_HEADER = "[CRAWLER]"
 url_count = 0 if not os.path.exists("successful_urls.txt") else (len(open("successful_urls.txt").readlines()) - 1)
 if url_count < 0:
     url_count = 0
-MAX_LINKS_TO_DOWNLOAD = 100
+MAX_LINKS_TO_DOWNLOAD = 3000
 mostOutboundLinks = ("url", 0)
 subdomains = dict()
 
@@ -32,11 +32,11 @@ class CrawlerFrame(IApplication):
     def __init__(self, frame):
         self.starttime = time()
         # Set app_id <student_id1>_<student_id2>...
-        self.app_id = "13942307_78016851"
+        self.app_id = "13942307_78016851_23968158"
         # Set user agent string to IR W17 UnderGrad <student_id1>, <student_id2> ...
         # If Graduate studetn, change the UnderGrad part to Grad.
         #Function 
-        self.UserAgentString = 'IR W17 UnderGrad 13942307, 78016851'
+        self.UserAgentString = 'IR W17 UnderGrad 13942307, 78016851, 23968158'
 
 	# Q
 	# Analytics global variables
@@ -55,7 +55,7 @@ class CrawlerFrame(IApplication):
 
     def initialize(self):
         self.count = 0
-        l = ProducedLink("http://www.ics.uci.edu/community/news/view_news.php", self.UserAgentString)
+        l = ProducedLink("http://www.ics.uci.edu/", self.UserAgentString)
         print l.full_url
         self.frame.add(l)
 
@@ -91,7 +91,7 @@ class CrawlerFrame(IApplication):
         print "downloaded ", url_count, " in ", time() - self.starttime, " seconds."
         # calling new analytics functions
         self.writeAnalyticsToFile()
-        print subdomains
+        #print subdomains
         pass
 
 def save_count(urls):
@@ -161,17 +161,36 @@ def query_dict(url):
     try:
         url_parse=urlparse(url)
         #found on stackover flow because parse_qs does not work
-        return dict(query.split('=') for query in url_parse.query.split("&"))
+        return cgi.parse_qs(url_parse.query)
+        #return dict(query.split('=') for query in url_parse.query.split("&"))
     except Exception as e:
         print str(e)
         return ''
+
+#check repeating directory. If a directory path is repeated x amount of times or a string. Its a trap
+def check_rep(url, x=3):
+    parsed=urlparse(url)
+    #get rel path
+    rel_path=parsed.path
+    path_count=dict()
+    for path in rel_path.split('/'):
+        if path in path_count:
+            path_count[path]+=1
+            if path_count[path]>x:
+                with open('traps.txt', 'a') as anaFile:
+                    anaFile.write('traps:'+str(parsed.hostname)+str(parsed.path)+'\t Reapeated path\n')
+                return True
+        else:
+            path_count[path]=1
+    return False
+        
 #given a path. Check if it has been visted before
 
 def check_trap(url, x=5):
     #if the url has been visted x amount of times remove it
     parsed=urlparse(url)
     possible_trap=0
-    exceptions=['id','ID','page','PAGE']
+    exceptions=['id','ID','page','PAGE','ucinetid']
     querys=query_dict(url)
 
     #check if file end in php
@@ -180,12 +199,10 @@ def check_trap(url, x=5):
     #if there are query values Then its possibly a trap
     if len(querys)!=0:
         possible_trap=1
+    
     if possible_trap:
 #        return 1
-      if parsed.hostname in subdomains:
-             print(querys)
-             if '/community/news/view_news.php' in url:
-                print(querys)                 
+      if parsed.hostname in subdomains:               
                  
              for exception in exceptions:
                  
@@ -194,7 +211,7 @@ def check_trap(url, x=5):
              if parsed.path in subdomains[parsed.hostname]:
                  if subdomains[parsed.hostname][parsed.path] >= x:
                      with open('traps.txt', 'a') as anaFile:
-                         anaFile.write('traps:'+str(parsed.hostname)+str(parsed.path)+'\n')
+                         anaFile.write('traps:'+str(parsed.hostname)+str(parsed.path)+' Query page was repeated x times\n')
 
                      return 1
     return 0
@@ -220,6 +237,8 @@ def is_valid(url):
     url=strip_anchor(url)
     parsed = urlparse(url)
     if check_trap(url):
+        return False
+    if check_rep(url):
         return False
     #query_dict(url)
     if parsed.scheme not in set(["http", "https"]):
