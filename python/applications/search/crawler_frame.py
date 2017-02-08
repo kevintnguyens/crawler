@@ -68,6 +68,7 @@ class CrawlerFrame(IApplication):
                     lObj = ProducedLink(l, self.UserAgentString)
                     self.frame.add(lObj)
                 else:
+                    print l + 'was invalid\n'
                     self.invalidLinks += 1
         if url_count >= MAX_LINKS_TO_DOWNLOAD:
             self.done = True
@@ -88,7 +89,7 @@ class CrawlerFrame(IApplication):
                 anaFile.write('\n'+str(sub)+': '+str(subcount))
 
     def shutdown(self):
-        print "downloaded ", url_count, " in ", time() - self.starttime, " seconds."
+        print "ed ", url_count, " in ", time() - self.starttime, " seconds."
         # calling new analytics functions
         self.writeAnalyticsToFile()
         #print subdomains
@@ -130,9 +131,25 @@ def extract_next_links(rawDatas):
         tagCount = 0
         soup = BeautifulSoup(item[1], 'lxml')
         for tag in soup.findAll('a',href=True):
-            outputLinks.append(tag['href'])
-            tagCount += 1
-
+            url=strip_anchor(tag['href'])
+            parsed = urlparse(tag['href'])
+            #if url does begin with http or https. It its an absolute url
+            if parsed.scheme in set(["http", "https"]):
+                outputLinks.append(tag['href'])
+                tagCount += 1
+            #rel link with /. replace path with new path
+            elif len(tag['href'])>1 and tag['href'][0]=='/' and tag['href'][1]!='/' :
+                parsed = urlparse(item[0])
+                url=parsed.scheme+parsed.netloc
+                outputLinks.append(url+'/'+tag['href'])
+                tagCount += 1
+            #path is // replace hostname with this
+            elif len(tag['href'])>1 and tag['href'][0]=='/' and tag['href'][1]=='/':
+                outputLinks.append('http'+tag['href'])
+                tagCount+=1
+            else
+                #append # , ? and everything else to current url
+                outputLinks.append(item[0]+'/'+tag['href'])
         # Update for Part 3 in analytics
         if tagCount > mostOutboundLinks[1]:
             mostOutboundLinks = (item[0], tagCount)
@@ -236,12 +253,13 @@ def is_valid(url):
     #given a hashmap of a list of urls and query parament. check if it has been hit more then x amount of times. Make exceptions for page query.
     url=strip_anchor(url)
     parsed = urlparse(url)
+
+    #query_dict(url)
+    if parsed.scheme not in set(["http", "https"]):
+        return False
     if check_trap(url):
         return False
     if check_rep(url):
-        return False
-    #query_dict(url)
-    if parsed.scheme not in set(["http", "https"]):
         return False
     try:
         return ".ics.uci.edu" in parsed.hostname \
